@@ -1,0 +1,424 @@
+r"""
+
+"""
+
+import re
+from enum import Enum, auto
+
+from collections import namedtuple
+
+def Blocker(raw_text):
+    blocks = []
+    raw_lines = raw_text.strip().split("\n")
+
+    buffer = []
+    spaces = 0
+    while len(raw_lines):
+        line = raw_lines.pop(0)
+        buffer.append(line)
+
+        if line == "":
+            spaces += 1
+        else:
+            spaces = 0
+
+        if spaces >= 2:
+            if buffer:
+                if buffer[-2] == "" and buffer[-1] == "":
+                    blocks.append(buffer[:-2])
+                else:
+                    blocks.append(buffer)
+
+            buffer = []
+            spaces = 0
+
+    if buffer:
+        blocks.append(buffer)
+
+    return blocks
+
+
+class Regexs:
+
+    BLANK = re.compile(r"^$")
+
+    CODELINE = re.compile(r"(^\ {4})|(^\t)")
+    START_WS = re.compile(r"^(\s+)")
+    QUOTED = re.compile(r"^(\>)")
+
+    ORDERED_ITEM = re.compile(r"^\d{1,}\.") # (Numeric)(period)
+    UNORDERED_ITEM = re.compile(r"^\* ")
+    ANCHOR = re.compile(r"""\[([^\]]+)\]\(([^\)]+)\)|\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
+    EMPHASIS = re.compile(r"\s\_([^\_]+)\_\s+")
+
+    LINE_HEADER = re.compile(r"""^((\#+) )""")
+
+
+Token = namedtuple("Token", "content,type,nested")
+
+def test_nested(raw):
+    match = Regexs.START_WS.match(raw)
+
+    if match is not None:
+        raw = raw[match.end():]
+
+    return raw, match is not None
+
+class Line(object):
+    REGEX = None
+
+    def __init__(self, content, nested=False):
+        self.content = content
+        self.nested = nested
+
+    @classmethod
+    def TestAndConsume(cls, raw):
+        assert cls.REGEX is not None, f"Expected {cls} to have a REGEX assigned"
+        product = None
+        raw, is_nested = test_nested(raw)
+
+        match = cls.REGEX.match(raw)
+        if match is not None:
+            product = cls(raw[match.end():], is_nested)
+
+        return raw, product
+
+
+
+
+
+class BlankLine(Line):
+
+    pass
+
+class RawTextLine(Line):
+    pass
+
+class TextLine(Line):
+
+    @classmethod
+    def TestAndConsume(cls, raw):
+
+        raw, is_nested = test_nested(raw)
+
+        return cls(raw, is_nested)
+
+
+
+class QuotedLine(Line):
+    REGEX = Regexs.QUOTED
+    pass
+
+class CodeLine(Line):
+    REGEX = Regexs.CODELINE
+
+    @classmethod
+    def TestAndConsume(cls, raw):
+        assert cls.REGEX is not None, f"Expected {cls} to have a REGEX assigned"
+        product = None
+
+
+        match = cls.REGEX.match(raw)
+        if match is not None:
+            raw, is_nested = test_nested(raw[match.end():])
+            product = cls(raw, is_nested)
+
+        return raw, product
+
+
+class OrderedItemLine(Line):
+    REGEX = Regexs.ORDERED_ITEM
+    pass
+
+class UnorderedItemLine(Line):
+    REGEX = Regexs.UNORDERED_ITEM
+    pass
+
+class HeaderLine(Line):
+
+    REGEX = Regexs.LINE_HEADER
+
+    def __init__(self, raw, is_nested=False, level=1):
+        self.level= level
+        super().__init__(raw, is_nested)
+
+
+
+    @classmethod
+    def TestAndConsume(cls, raw):
+        product = None
+        raw, is_nested = test_nested(raw)
+
+        match = cls.REGEX.match(raw)
+
+        if match is not None:
+            level = match.string.strip().count("#")
+            product = cls(raw[:match.end()], is_nested, level)
+
+        return raw, product
+
+
+
+class TokenTypes(Enum):
+    BLANK_LINE = 0
+    CODE_LINE = 1
+    QUOTE_LINE = 2
+
+    TEXT = auto()
+
+def TokenizeBody(raw:str):
+
+    return Token(raw, False, TokenTypes.TEXT)
+
+def TokenizeLine(raw:str)->Token:
+    """
+    :param raw_str:
+    :return:
+    """
+    is_nested = False
+
+    if raw.strip() == "":
+        return BlankLine(raw, False)
+
+    # raw, codeline = CodeLine.TestAndConsume(raw)
+    #
+    # if codeline is not None:
+    #     return codeline
+
+    processors = [
+        CodeLine,
+        QuotedLine,
+        UnorderedItemLine,
+        OrderedItemLine,
+        HeaderLine
+    ]
+
+    for processor in processors:
+        _, product = processor.TestAndConsume(raw)
+
+        if product is not None:
+            return product
+
+    else:
+        return TextLine.TestAndConsume(raw)
+
+
+    # raw, quoted_line = QuotedLine.TestAndConsume(raw)
+    #
+    # if quoted_line is not None:
+    #     return quoted_line
+    #
+    # raw, unordered_line = UnorderedItemLine.TestAndConsume(raw)
+    #
+    # if unordered_line is not None:
+    #     return unordered_line
+    #
+    #
+    #
+    # # if Regexs.QUOTED.match(raw):
+    # #     match = Regexs.QUOTED.match(raw)
+    # #     raw = raw[match.end():]
+    # #
+    # #     return QuotedLine(TokenizeBody(raw), is_nested)
+    #
+    # elif Regexs.UNORDERED_ITEM.match(raw):
+    #     match = Regexs.UNORDERED_ITEM.match(raw)
+    #     raw = raw[match.end():]
+    #     return UnorderedItemLine(TokenizeBody(raw), is_nested)
+    #
+    # elif Regexs.ORDERED_ITEM.match(raw):
+    #     match = Regexs.ORDERED_ITEM.match(raw)
+    #     raw = raw[match.end():]
+    #     return OrderedItemLine(TokenizeBody(raw), is_nested)
+    #
+    #
+    # else:
+    #     return TextLine(TokenizeBody(raw), is_nested)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class TextToken(object):
+#
+#     def __init__(self, raw_str):
+#         self.body = raw_str
+#
+#
+#
+# class BaseTokenizedLine(object):
+#     __slots__ = ("tokens", "nested")
+#
+#     def __init__(self, nested = False):
+#         self.tokens = []
+#         self.nested = nested
+#
+#         if raw_line is not None:
+#             self.tokens.append(TextToken(raw_line))
+#
+#
+#
+#
+# class CodeLine(BaseTokenizedLine):
+#
+#     def __init__(self, raw_line):
+#         super(self).__init__(raw_line)
+#
+# class QuotedLine(BaseTokenizedLine):
+#     def __init__(self, raw_line):
+#         super(self).__init__(raw_line)
+
+
+
+
+# class TokenTypes(Enum):
+#     BLANK = 1
+#     HEADER = 2 # first line token starts with at least one #
+#
+#     CODE_MARK = 3 #Is ``` by itself
+#
+#     CODE_SPACE = 4 #Is four spaces
+#     CODE_TAB = 4
+#     CODE_LINE_START = 4
+#
+#     BLOCKQUOTE = 5
+#
+#     LINE_ITEM_UNORDERED =  6    # *
+#     LINE_ITEM_ORDERED = 7       # \d{1,}\.
+#     TABLE_CELL = 8              # starts with |
+#     TEXT = 9                    # Whatever didn't match above
+#
+
+#
+#
+#
+# class Token(object):
+#     __slots__ = ("type", "content")
+#
+#     def __init__(self, type=):
+#         self.content = []
+#
+#
+# class TokenLine(object):
+#     __slots__ = ("type", "tokens", "nested")
+#
+#     def __init__(self, type = TokenTypes.TEXT, nested=False):
+#         self.type = type
+#         self.nested = nested
+#         self.tokens = []
+#
+#     def append(self, token):
+#         self.tokens.append(token)
+#
+#     def __iter__(self):
+#         for token in self.tokens:
+#             yield token
+#
+# class TextLine(object):
+#     def __init__(self, nested=False):
+#         self.type = TokenTypes.TEXT
+#         if
+#
+# class CodeLine(TokenLine):
+#     """
+#         Anything after Code start is considered TextToken.
+#
+#         TODO: allow for nested code blocks like
+#
+#         <li>
+#             <p>Hello World</p>
+#             <code>
+#                 x = 123
+#                 y = x - 20
+#                 x == 103
+#             </code>
+#         </li>
+#     """
+#
+#
+#     def __init__(self, raw_line):
+#
+#
+#
+#
+#
+# def BlockTokenizer(block:list):
+#
+#     for line in block: # type: str
+#         current_line = TokenLine()
+#
+#         if line.strip() == "":
+#             current_line.type = TokenTypes.BLANK
+#             continue
+#
+#         # Check for code block escapes
+#         if line.startswith("\t"):
+#             current_line.type = TokenTypes.CODE_LINE_START
+#             line = line[1:]
+#         elif Regexs.STARTING_FOUR_SPACE.match(line) is not None:
+#             match = Regexs.STARTING_FOUR_SPACE.match(line)
+#             current_line.type = TokenTypes.CODE_LINE_START
+#             line = line[match.pos:match.endpos]
+#
+#         if current_line.type == TokenTypes.CODE_LINE_START:
+#             token = Token()
+#
+#         #look for spaces and tabs in excess of code block starts
+#         if Regexs.START_WS.match(line) is not None:
+#             match = Regexs.START_WS.match(line)
+#             current_line.nested = True
+#             line = line[match.pos, tch.endpos]
+#
+#         if current_line.type == TokenTypes.CODE_LINE_START:
+#             token = Token(TokenTypes.TEXT)
+#             token.append(line)
+#             continue
+#
+#         if line[0] == ">":
+#             current_line.type = TokenTypes.BLOCKQUOTE
+#             line = line[1:]
+#         elif line[0:1] == "* ":
+#             current_line.type = TokenTypes.LINE_ITEM_UNORDERED
+#             line = line[2:]
+#         elif Regexs.ORDERED_RE.match(line):
+#             match = Regexs.ORDERED_RE.match(line)
+#             current_line.type = TokenTypes.LINE_ITEM_ORDERED
+#             line = line[match.pos, ma]
+#
+#
+#
+#
+#         for fragment in line.split(ParserBasics.TOKEN_SEP):
+#
+#
+#         yield ParserBasics.NEWLINE
+#
+#     else:
+#
+#
+#
+#
+#
+#
+
+#
+#
+#
+#
