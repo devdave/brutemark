@@ -165,18 +165,10 @@ class Line(object):
         return raw, product
 
 
-
-
-
 class BlankLine(Line):
-
-    pass
-
-class RawTextLine(Line):
     pass
 
 class TextLine(Line):
-
     @classmethod
     def TestAndConsume(cls, raw):
 
@@ -185,10 +177,10 @@ class TextLine(Line):
         return cls(raw, is_nested)
 
 
-
 class QuotedLine(Line):
     REGEX = Regexs.QUOTED
     pass
+
 
 class CodeLine(Line):
     REGEX = Regexs.CODELINE
@@ -197,9 +189,8 @@ class CodeLine(Line):
     def TestAndConsume(cls, raw):
         assert cls.REGEX is not None, f"Expected {cls} to have a REGEX assigned"
         product = None
-
-
         match = cls.REGEX.match(raw)
+
         if match is not None:
             raw, is_nested = test_nested(raw[match.end():])
             product = cls(raw, is_nested)
@@ -240,10 +231,6 @@ class HeaderLine(Line):
 
 
 
-class TokenTypes(Enum):
-    BLANK_LINE = 0
-    CODE_LINE = 1
-    QUOTE_LINE = 2
 
     TEXT = auto()
 
