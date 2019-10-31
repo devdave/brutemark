@@ -231,12 +231,50 @@ class HeaderLine(Line):
 
 
 
+def TokenizeBody(raw:str)->[]:
+    """
+        given a string like
+            hello __world__ this *is* a **test** of [Markdown](https://daringfireball.net/projects/markdown/ "Markdown homepage")
+        creates
+            [
+                Text("Hello "),
+                Emphasis(Text("world")),
+                Text(" this "),
+                Emphasis(Text("is")),
+                Text(" a "),
+                Strong(Text("test"),
+                Text(" of "),
+                Anchor(body=Text("Markdown",href="https://daringfireball.net/projects/markdown/", title="Markdown homepage")
+            ]
 
-    TEXT = auto()
+    :param raw:str
+    :return:
+    """
+    processors = [
+        StrongText,
+        EmphasisText,
+        Anchor,
+        Image
+    ]
+    processed_line = []
 
-def TokenizeBody(raw:str):
 
-    return Token(raw, False, TokenTypes.TEXT)
+    for processor in processors:
+
+        pre, token, post = processor.Consume(raw)
+
+        if token is not None:
+            if pre is not None and pre != "":
+                processed_line.extend(TokenizeBody(pre))
+
+            processed_line.append(token)
+
+            if post is not None and post != "":
+                processed_line.extend(TokenizeBody(post))
+
+            return processed_line
+
+    return [Text(raw)]
 
 def TokenizeLine(raw:str)->Token:
     """
