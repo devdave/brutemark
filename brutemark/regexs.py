@@ -1,5 +1,10 @@
 import re
 
+"""
+# Line based token containers 
+As denoted by `^` in the regex
+
+"""
 BLANK = re.compile(r"^$")
 
 CODELINE = re.compile(r"(^\ {4})|(^\t)")
@@ -8,6 +13,10 @@ QUOTED = re.compile(r"^(\>)")
 
 ORDERED_ITEM = re.compile(r"^\d{1,}\.") # (Numeric)(period)
 UNORDERED_ITEM = re.compile(r"^\* ")
+
+"""
+    Body tokens
+"""
 
 ANCHOR = re.compile(r"""\[([^\]]+)\]\(([^\)]+)\)|\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
 IMAGE = re.compile(r"""\!\[([^\]]+)\]\(([^\)]+)\)|\!\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
