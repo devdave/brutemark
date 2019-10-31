@@ -1,4 +1,5 @@
-from brutemark.parser import Blocker, TokenizeLine, Line
+from brutemark.line_tokens import Line
+from brutemark.parser import Blocker, TokenizeLine
 
 test = """
 # Hello World
