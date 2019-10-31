@@ -49,7 +49,11 @@ class Regexs:
     ORDERED_ITEM = re.compile(r"^\d{1,}\.") # (Numeric)(period)
     UNORDERED_ITEM = re.compile(r"^\* ")
     ANCHOR = re.compile(r"""\[([^\]]+)\]\(([^\)]+)\)|\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
-    EMPHASIS = re.compile(r"\s\_([^\_]+)\_\s+")
+    STRONG_underscore = re.compile(r"""(\_{2}([^_]+)\_{2})""")
+    STRONG_star = re.compile(r"""(\*{2}([^_]+)\*{2})""")
+    EMPHASIS_underscore = re.compile(r"\_([^\_]+)\_")
+    EMPHASIS_star = re.compile(r"(\*{2}([^\*]+)\*{2})")
+
 
     LINE_HEADER = re.compile(r"""^((\#+) )""")
 
