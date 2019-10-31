@@ -19,3 +19,13 @@ def test_detects_emphasis_markdown():
 
     assert isinstance(actual[0], Text)
     assert isinstance(actual[1], EmphasisText)
+
+
+def test_strong_nested_in_emphasis():
+
+    test = "_Hello **World**_"
+    expected = [EmphasisText([Text("Hello "),StrongText("World")])]
+    actual = TokenizeBody(test)
+
+    assert len(actual) == 1
+    assert actual[0].content == expected[0].content
