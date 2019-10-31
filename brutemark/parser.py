@@ -140,6 +140,12 @@ class Anchor(Token):
 class Image(Token):
     REGEX = Regexs.IMAGE
     pass
+
+"""    
+Line based tokens
+=================
+"""
+
 def test_nested(raw):
     match = Regexs.START_WS.match(raw)
 
@@ -150,6 +156,7 @@ def test_nested(raw):
 
 class Line(object):
     REGEX = None
+    BODY_PROCESSOR = RawText
 
     def __init__(self, content, nested=False):
         self.content = content
