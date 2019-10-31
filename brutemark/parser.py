@@ -101,19 +101,19 @@ class Text(Token):
 
 
 class EmphasisText(Text):
-    REGEX = [Regexs.EMPHASIS_underscore, Regexs.EMPHASIS_star]
+    REGEX = [regexs.EMPHASIS_underscore, regexs.EMPHASIS_star]
     pass
 
 class StrongText(Text):
-    REGEX = [Regexs.STRONG_star, Regexs.STRONG_underscore]
+    REGEX = [regexs.STRONG_star, regexs.STRONG_underscore]
     pass
 
 class Anchor(Token):
-    REGEX = Regexs.ANCHOR
+    REGEX = regexs.ANCHOR
     pass
 
 class Image(Token):
-    REGEX = Regexs.IMAGE
+    REGEX = regexs.IMAGE
     pass
 
 """    
