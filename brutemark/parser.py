@@ -60,6 +60,83 @@ class Regexs:
 
 Token = namedtuple("Token", "content,type,nested")
 
+"""
+    
+Inline/embedded Tokens
+======================
+    emphasis em
+    strong strong
+    strikethrough del
+    anchor
+    image
+    
+"""
+
+class Token(object):
+
+    REGEX = None
+
+    def __init__(self, content):
+        self.content = content
+
+    @classmethod
+    def Consume(cls, raw):
+        """
+            Consume is complicated versus Line tokens
+            because it expects to start with str and convert that to
+                pre:str, token, post:str
+            on success OR
+                pre:str, None, None
+            on a miss
+        """
+        assert cls.REGEX is not None, f"{cls!r} expected to have REGEX attribute not None for {raw!r}"
+
+        product = None
+        post = None
+
+        regexs = [cls.REGEX]if isinstance(cls.REGEX, list) is False else cls.REGEX
+
+        for regex in regexs:
+            match = regex.search(raw)
+
+            if match is not None:
+
+                match_start = match.start(0)-1
+                match_end = match.end(0)+1
+
+                post = None if len(raw) == match_end else raw[match_end:]
+                product = cls(match.group(1))
+                raw = None if match_start == 0 else raw[:match_start]
+                return raw, product, post
+
+        else:
+            return raw, None, None
+
+class RawText(Token):
+
+    @classmethod
+    def Consume(cls, raw):
+        return cls(raw)
+
+class Text(Token):
+    REGEX = re.compile(r"(.+)")
+
+
+class EmphasisText(Text):
+    REGEX = [Regexs.EMPHASIS_underscore, Regexs.EMPHASIS_star]
+    pass
+
+class StrongText(Text):
+    REGEX = [Regexs.STRONG_star, Regexs.STRONG_underscore]
+    pass
+
+class Anchor(Token):
+    REGEX = Regexs.ANCHOR
+    pass
+
+class Image(Token):
+    REGEX = Regexs.IMAGE
+    pass
 def test_nested(raw):
     match = Regexs.START_WS.match(raw)
 
