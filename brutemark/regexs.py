@@ -36,7 +36,6 @@ ANCHOR_title =  re.compile(r"""\[
 IMAGE_simple = re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+)\)""")
 IMAGE_title =  re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+) \"(?P<title>[^\"]+)\"\)""")
 
-LINE_HEADER = re.compile(r"""^((\#+) )""")
 
 STRONG_underscore = re.compile(r"""(\_{2}(?P<content>[^_]+)\_{2})""")
 STRONG_star = re.compile(
@@ -62,3 +61,4 @@ EMPHASIS_star = re.compile(
                             """, re.VERBOSE)
 
 
+LINE_HEADER = re.compile(r"""^(?P<content>\#+)\ """)
