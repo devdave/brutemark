@@ -63,7 +63,7 @@ class HTMLLine(Line):
 
 
 class CodeLine(Line):
-    REGEX = regexs.CODELINE
+    REGEX = regexs.CODE_LINE
 
     @classmethod
     def TestAndConsume(cls, raw):
