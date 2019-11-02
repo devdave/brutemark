@@ -85,8 +85,8 @@ def TokenizeBody(raw:str)->[]:
     :return:
     """
     processors = [
-        StrongText,
         EmphasisText,
+        StrongText,
         Anchor,
         Image
     ]
