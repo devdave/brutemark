@@ -46,6 +46,21 @@ class QuotedLine(Line):
     REGEX = regexs.QUOTED
     pass
 
+class HTMLLine(Line):
+    REGEX = regexs.HTML_LINE
+
+    @classmethod
+    def TestAndConsume(cls, raw):
+        product = None
+        match = cls.REGEX.match(raw)
+        is_nested = False
+
+        if match is not None:
+            product = cls(raw, is_nested)
+
+        return raw, product
+
+
 
 class CodeLine(Line):
     REGEX = regexs.CODELINE
