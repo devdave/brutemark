@@ -18,13 +18,25 @@ UNORDERED_ITEM = re.compile(r"^\* ")
     Body tokens
 """
 
-ANCHOR = re.compile(r"""\[([^\]]+)\]\(([^\)]+)\)|\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
 IMAGE = re.compile(r"""\!\[([^\]]+)\]\(([^\)]+)\)|\!\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
+ANCHOR_simple = re.compile(r"""\[
+                                (?P<content>[^\]]+)
+                                \]
+                                \(
+                                (?P<href>[^\)]+)
+                                \)""", re.VERBOSE)
 
 STRONG_underscore = re.compile(r"""(\_{2}([^_]+)\_{2})""")
 STRONG_star = re.compile(r"""(\*{2}([^_]+)\*{2})""")
 EMPHASIS_underscore = re.compile(r"\_([^\_]+)\_")
 EMPHASIS_star = re.compile(r"(\*{2}([^\*]+)\*{2})")
+ANCHOR_title =  re.compile(r"""\[
+                                (?P<content>[^\]]+)
+                                \]
+                                \(
+                                (?P<href>[^\)]+)
+                                 \"(?P<title>[^\"]+)\"
+                                \)""", re.VERBOSE)
 
 
 LINE_HEADER = re.compile(r"""^((\#+) )""")
