@@ -7,13 +7,13 @@ As denoted by `^` in the regex
 """
 BLANK = re.compile(r"^$")
 
-CODELINE = re.compile(r"(^\ {4})|(^\t)")
 HTML_LINE = re.compile(
                     r"""^(?!\t) #Ignore if line starts with tab or more than 3 spaces
                         (?!\s{4,})  #TODO I don't feel like fixing right now but this fails to match if there are ANY spaces
                             (?P<content>\<[^\>]+\>) #Match <ANYTHING> that is wrapped with greater/less than symbols
                     """, re.VERBOSE)
 
+CODE_LINE = re.compile(r"(^\ {4})|(^\t)")
 START_WS = re.compile(r"^(\s+)")
 QUOTED = re.compile(r"^(\>)")
 
