@@ -1,6 +1,14 @@
 from brutemark.parser import TokenizeBody, Text, StrongText, EmphasisText
 
 
+def test_emphasis_is_negated_by_slash():
+    test = "Hello \*world*"
+    expected = Text("Hello \*World*",0, len(test))
+    actual = TokenizeBody(test)
+
+    assert len(actual) == 1
+
+
 def test_emphasis_consume_matches():
     test = "Hello _World_"
     expected = EmphasisText("World",6,13)
