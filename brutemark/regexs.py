@@ -37,6 +37,7 @@ IMAGE_simple = re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+)\)""")
 IMAGE_title =  re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+) \"(?P<title>[^\"]+)\"\)""")
 
 
+
 STRONG_underscore = re.compile(r"""(\_{2}(?P<content>[^_]+)\_{2})""")
 STRONG_star = re.compile(
                         r"""(
