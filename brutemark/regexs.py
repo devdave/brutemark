@@ -49,8 +49,10 @@ IMAGE_title =  re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+) \"(?P<
 STRONG_underscore = re.compile(r"""(\_{2}(?P<content>[^_]+)\_{2})""")
 STRONG_star = re.compile(
                         r"""(
+                        (?<!\\)
                         \*{2}
                         (?P<content>[^_]+)
+                        (?<!\\)
                         \*{2}
                         )""", re.VERBOSE)
 
