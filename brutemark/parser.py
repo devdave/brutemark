@@ -90,25 +90,31 @@ def TokenizeBody(raw:str)->[]:
         Anchor,
         Image
     ]
-    processed_line = []
-
+    product = []
 
     for processor in processors:
 
-        pre, token, post = processor.Consume(raw)
+        _, token = processor.Consume(raw)
 
         if token is not None:
-            if pre is not None and pre != "":
-                processed_line.extend(TokenizeBody(pre))
+            pre = post = None
 
-            processed_line.append(token)
+            if token.start != 0:
+                product.extend(TokenizeBody(raw[:token.start]))
 
-            if post is not None and post != "":
-                processed_line.extend(TokenizeBody(post))
+            token.content = TokenizeBody(token.content)
+            product.append(token)
 
-            return processed_line
+            if token.stop != len(raw):
+                product.extend(TokenizeBody(raw[token.stop:]))
 
-    return [Text(raw)]
+            break
+
+    else:
+        product.append(Text(raw, 0, len(raw)))
+
+
+    return product
 
 def TokenizeLine(raw:str)->Token:
     """
@@ -119,11 +125,6 @@ def TokenizeLine(raw:str)->Token:
 
     if raw.strip() == "":
         return BlankLine(raw, False)
-
-    # raw, codeline = CodeLine.TestAndConsume(raw)
-    #
-    # if codeline is not None:
-    #     return codeline
 
     processors = [
         CodeLine,
@@ -138,6 +139,7 @@ def TokenizeLine(raw:str)->Token:
 
         if product is not None:
             return product
+            break
 
     else:
         return TextLine.TestAndConsume(raw)
