@@ -18,6 +18,12 @@ def test_emphasis_star_is_negated_by_slash():
     assert isinstance(actual[0], Text)
     assert actual[0].content == trailing_test
 
+    _, leading_token = EmphasisText.Consume(leading_test)
+    assert leading_token is None
+
+    _, trailing_test = EmphasisText.Consume(trailing_test)
+    assert trailing_test is None
+
 
 
 def test_emphasis_consume_matches():
