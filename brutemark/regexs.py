@@ -76,4 +76,3 @@ EMPHASIS_star = re.compile(
                             """, re.VERBOSE)
 
 
-LINE_HEADER = re.compile(r"""^(?P<content>\#+)\ """)
