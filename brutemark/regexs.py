@@ -56,8 +56,12 @@ EMPHASIS_underscore = re.compile(
                             )""", re.VERBOSE)
 EMPHASIS_star = re.compile(
                             r"""
+                            (?<!\\)
                             (?<!\*)
-                            \*(?P<content>[^\*]+)\*
+                            \*
+                            (?P<content>[^\*]+)
+                            (?<!\\)
+                            \*
                             (?!\*)
                             """, re.VERBOSE)
 
