@@ -25,8 +25,6 @@ ANCHOR_simple = re.compile(r"""\[
                                 (?P<href>[^\)]+)
                                 \)""", re.VERBOSE)
 
-EMPHASIS_underscore = re.compile(r"\_([^\_]+)\_")
-EMPHASIS_star = re.compile(r"(\*{2}([^\*]+)\*{2})")
 ANCHOR_title =  re.compile(r"""\[
                                 (?P<content>[^\]]+)
                                 \]
@@ -47,4 +45,20 @@ STRONG_star = re.compile(
                         (?P<content>[^_]+)
                         \*{2}
                         )""", re.VERBOSE)
+
+EMPHASIS_underscore = re.compile(
+                            r"""(
+                            (?<!\_) #if there is double __ at the start, ignore
+                            \_
+                            (?P<content>[^\_]+)
+                            \_                            
+                            (?!\_) #if there is double __ at the end, ignore
+                            )""", re.VERBOSE)
+EMPHASIS_star = re.compile(
+                            r"""
+                            (?<!\*)
+                            \*(?P<content>[^\*]+)\*
+                            (?!\*)
+                            """, re.VERBOSE)
+
 
