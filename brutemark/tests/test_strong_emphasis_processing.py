@@ -1,10 +1,10 @@
 from brutemark.parser import TokenizeBody, Text, StrongText, EmphasisText
 
 
-def test_emphasis_is_negated_by_slash():
     test = "Hello \*world*"
     expected = Text("Hello \*World*",0, len(test))
     actual = TokenizeBody(test)
+def test_emphasis_star_is_negated_by_slash():
 
     assert len(actual) == 1
 
