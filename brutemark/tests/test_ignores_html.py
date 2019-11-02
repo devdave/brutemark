@@ -1,5 +1,5 @@
 from brutemark.parser import Blocker, TokenizeBody, TokenizeLine
-from brutemark.line_tokens import HTMLLine
+from brutemark.line_tokens import HTMLLine, CodeLine
 
 test_document = """<table>
     <tr>
@@ -9,10 +9,27 @@ test_document = """<table>
 </table>
 """
 
+def test_htmlline_correctly_consumes_the_correct_line_and_ignores_tabbed_or_spaced_lines():
+    """
+    raw html lines cannot be tabbed/spaced to avoid mixing them up with CodeLine's
+    """
+    _, actual = HTMLLine.TestAndConsume("<span>")
+    assert actual is not None
+
+    _, actual = HTMLLine.TestAndConsume("\t<thing>")
+    assert actual is None
+
+    _, actual = HTMLLine.TestAndConsume("   <foo bar=\"123\">")
+    assert actual is None
+
+    _, actual = HTMLLine.TestAndConsume("<foo bar=\"123\">")
+
+
 
 def test_tokenize_line_recognizes_html():
     blocks = Blocker(test_document)
 
     for block in blocks:
-        for line in blocks:
-            assert isinstance(line, HTMLLine)
+        for line in block:
+            product = TokenizeLine(line)
+            assert isinstance(product, (HTMLLine, CodeLine,))
