@@ -79,6 +79,7 @@ def test_emphasis_consumes_nested_strongtext():
 
 
 
+
 def test_strong_nested_in_emphasis():
 
     test = "_Hello **World**_"
