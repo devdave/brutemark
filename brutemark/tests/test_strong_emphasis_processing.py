@@ -1,12 +1,23 @@
 from brutemark.parser import TokenizeBody, Text, StrongText, EmphasisText
 
 
-    test = "Hello \*world*"
-    expected = Text("Hello \*World*",0, len(test))
-    actual = TokenizeBody(test)
 def test_emphasis_star_is_negated_by_slash():
+    leading_test = r"Hello \*world*"
+    expected = Text(leading_test, 0, len(leading_test))
+    actual = TokenizeBody(leading_test)
 
     assert len(actual) == 1
+    assert isinstance(actual[0], Text)
+    assert actual[0].content == leading_test
+
+    trailing_test = r"Hello *World\*"
+    expected = Text(trailing_test, 0, len(trailing_test))
+    actual = TokenizeBody(trailing_test)
+
+    assert len(actual) == 1
+    assert isinstance(actual[0], Text)
+    assert actual[0].content == trailing_test
+
 
 
 def test_emphasis_consume_matches():
