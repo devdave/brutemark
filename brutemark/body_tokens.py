@@ -16,24 +16,7 @@ class Token(object):
         self.stop = stop
         self.attrs = attrs
 
-    def insert_token(self, new_token):
-        pre_start = new_token.start - self.start
-        post_stop = new_token.stop - self.stop
-        content_len = len(self.content)
-        pre = self.content[:pre_start] if pre_start != 0 else None
-        middle = self.content[pre_start:post_stop]
-        tail = self.content[post_stop:]
-
-        product = []
-        if pre:
-            product.append(pre)
-        product.append(middle)
-        if tail:
-            product.append(tail)
-
-        self.content = product
-
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return f"<{self.__class__.__name__} content={self.content!r}>"
 
 
