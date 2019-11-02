@@ -20,6 +20,8 @@ QUOTED = re.compile(r"^(\>)")
 ORDERED_ITEM = re.compile(r"^\d{1,}\.") # (Numeric)(period)
 UNORDERED_ITEM = re.compile(r"^\* ")
 
+LINE_HEADER = re.compile(r"""^(?P<content>\#+)\ """)
+
 """
     Body tokens
 """
