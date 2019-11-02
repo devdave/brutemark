@@ -18,7 +18,6 @@ UNORDERED_ITEM = re.compile(r"^\* ")
     Body tokens
 """
 
-IMAGE = re.compile(r"""\!\[([^\]]+)\]\(([^\)]+)\)|\!\[([^\]]+)\]\(([^\)]+)( "[^"]")\)""")
 ANCHOR_simple = re.compile(r"""\[
                                 (?P<content>[^\]]+)
                                 \]
@@ -38,5 +37,7 @@ ANCHOR_title =  re.compile(r"""\[
                                  \"(?P<title>[^\"]+)\"
                                 \)""", re.VERBOSE)
 
+IMAGE_simple = re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+)\)""")
+IMAGE_title =  re.compile(r"""\!\[(?P<content>[^\]]+)\]\((?P<href>[^\)]+) \"(?P<title>[^\"]+)\"\)""")
 
 LINE_HEADER = re.compile(r"""^((\#+) )""")
