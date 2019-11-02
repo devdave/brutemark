@@ -1,4 +1,5 @@
-from brutemark.parser import TokenizeBody, Text, StrongText, EmphasisText
+from brutemark.parser import TokenizeBody
+from brutemark.body_tokens import Text, StrongText, EmphasisText
 
 
 def test_emphasis_star_is_negated_by_slash():

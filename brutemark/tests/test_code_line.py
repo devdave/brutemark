@@ -1,4 +1,5 @@
-from brutemark.parser import TokenizeLine, CodeLine
+from brutemark.parser import TokenizeLine
+from brutemark.line_tokens import CodeLine
 
 tabbed_code ="\tA=123"
 spaced_code = "    A=123"

@@ -1,5 +1,6 @@
 
-from brutemark.parser import TokenizeLine, QuotedLine
+from brutemark.parser import TokenizeLine
+from brutemark.line_tokens import QuotedLine
 
 blockquote = """>Single line blockquote"""
 nested_blockquote = """  >Single line blockquote that is nested"""

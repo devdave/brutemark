@@ -1,5 +1,6 @@
 
-from brutemark.parser import TokenizeLine, HeaderLine
+from brutemark.parser import TokenizeLine
+from brutemark.line_tokens import HeaderLine
 
 tests = [
     "# h1",

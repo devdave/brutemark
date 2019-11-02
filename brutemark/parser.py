@@ -9,8 +9,9 @@ from collections import namedtuple
 
 from . import regexs
 from . import line_tokens
-from .line_tokens import CodeLine, UnorderedItemLine, OrderedItemLine, QuotedLine, HeaderLine, BlankLine, TextLine
-from .body_tokens import Token, RawText, Text, EmphasisText, StrongText, Anchor, Image
+from . import body_tokens
+# from .line_tokens import CodeLine, UnorderedItemLine, OrderedItemLine, QuotedLine, HeaderLine, BlankLine, TextLine
+# from .body_tokens import Token, RawText, Text, EmphasisText, StrongText, Anchor, Image
 
 def Blocker(raw_text):
     blocks = []
@@ -76,10 +77,10 @@ def TokenizeBody(raw:str)->[]:
     :return:
     """
     processors = [
-        EmphasisText,
-        StrongText,
-        Anchor,
-        Image
+        body_tokens.EmphasisText,
+        body_tokens.StrongText,
+        body_tokens.Anchor,
+        body_tokens.Image
     ]
     product = []
 
@@ -102,12 +103,12 @@ def TokenizeBody(raw:str)->[]:
             break
 
     else:
-        product.append(Text(raw, 0, len(raw)))
+        product.append(body_tokens.Text(raw, 0, len(raw)))
 
 
     return product
 
-def TokenizeLine(raw:str)->Token:
+def TokenizeLine(raw:str)->line_tokens.Line:
     """
     :param raw_str:
     :return:
@@ -115,15 +116,15 @@ def TokenizeLine(raw:str)->Token:
     is_nested = False
 
     if raw.strip() == "":
-        return BlankLine(raw, False)
+        return line_tokens.BlankLine(raw, False)
 
     processors = [
         line_tokens.HTMLLine,
-        CodeLine,
-        QuotedLine,
-        UnorderedItemLine,
-        OrderedItemLine,
-        HeaderLine
+        line_tokens.CodeLine,
+        line_tokens.QuotedLine,
+        line_tokens.UnorderedItemLine,
+        line_tokens.OrderedItemLine,
+        line_tokens.HeaderLine
     ]
 
     for processor in processors:
@@ -134,6 +135,6 @@ def TokenizeLine(raw:str)->Token:
             break
 
     else:
-        return TextLine.TestAndConsume(raw)
+        return line_tokens.TextLine.TestAndConsume(raw)
 
 

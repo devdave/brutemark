@@ -1,4 +1,5 @@
-from brutemark.parser import TokenizeLine, OrderedItemLine, UnorderedItemLine
+from brutemark.parser import TokenizeLine
+from brutemark.line_tokens import OrderedItemLine, UnorderedItemLine
 
 ordered_line = "123. Hello World"
 nested_ordered_line = "  123. Hello World"
