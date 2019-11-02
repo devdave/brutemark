@@ -8,7 +8,7 @@ from enum import Enum, auto
 from collections import namedtuple
 
 from . import regexs
-from .line_tokens import CodeLine, UnorderedItemLine, OrderedItemLine, QuotedLine, HeaderLine, BlankLine
+from .line_tokens import CodeLine, UnorderedItemLine, OrderedItemLine, QuotedLine, HeaderLine, BlankLine, TextLine
 
 def Blocker(raw_text):
     blocks = []
@@ -51,6 +51,7 @@ Inline/embedded Tokens
     anchor
     image    
 """
+from .body_tokens import Token, RawText, Text, EmphasisText, StrongText, Anchor, Image
 
 
 """    
