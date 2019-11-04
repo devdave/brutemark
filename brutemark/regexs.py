@@ -18,7 +18,7 @@ CODE_LINE = re.compile(r"(^\ {4})|(^\t)")
 START_WS = re.compile(r"^(\s+)")
 QUOTED = re.compile(r"^(\>) (?P<content>.*)")
 
-ORDERED_ITEM = re.compile(r"^\d{1,}\. (?P<content>.*)") # (Numeric)(period)
+ORDERED_ITEM = re.compile(r"^\d+\. (?P<content>.*)") # (Numeric)(period)
 UNORDERED_ITEM = re.compile(r"^\* (?P<content>.*)")
 
 LINE_HEADER = re.compile(r"""^(?P<depth>\#+)\ (?P<content>.*)""")
