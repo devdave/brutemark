@@ -7,6 +7,7 @@ As denoted by `^` in the regex
 """
 BLANK = re.compile(r"^$")
 
+#TODO this will fail to match correctly if a line is `<div><p>foo bar</p></div>`
 HTML_LINE = re.compile(
                     r"""^(?!\t) #Ignore if line starts with tab or more than 3 spaces
                         (?!\s{4,})  #TODO I don't feel like fixing right now but this fails to match if there are ANY spaces
@@ -15,7 +16,7 @@ HTML_LINE = re.compile(
 
 CODE_LINE = re.compile(r"(^\ {4})|(^\t)")
 START_WS = re.compile(r"^(\s+)")
-QUOTED = re.compile(r"^(\>)")
+QUOTED = re.compile(r"^(\>) (?P<content>.*)")
 
 ORDERED_ITEM = re.compile(r"^\d{1,}\. (?P<content>.*)") # (Numeric)(period)
 UNORDERED_ITEM = re.compile(r"^\* (?P<content>.*)")

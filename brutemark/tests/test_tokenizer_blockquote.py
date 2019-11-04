@@ -7,6 +7,8 @@ nested_blockquote = """  >Single line blockquote that is nested"""
 
 def test_blockquote_consumes_string_correctly():
     _, actual = QuotedLine.TestAndConsume(blockquote)
+
+    assert actual is not None
     assert isinstance(actual, QuotedLine)
     assert actual.content == "Single line blockquote"
 
