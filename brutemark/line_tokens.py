@@ -32,9 +32,9 @@ class Line(object):
         body = "\n".join(lines)
 
         product = f"""\
-        <generic_line>
+        <{cls.__name__}>
             {body}
-        </generic_line>"""
+        </{cls.__name__}"""
 
         return textwrap.dedent(product)
 
