@@ -2,8 +2,8 @@
 from brutemark.parser import TokenizeLine
 from brutemark.line_tokens import QuotedLine
 
-blockquote = """>Single line blockquote"""
-nested_blockquote = """  >Single line blockquote that is nested"""
+blockquote = """> Single line blockquote"""
+nested_blockquote = """  > Single line blockquote that is nested"""
 
 def test_blockquote_consumes_string_correctly():
     _, actual = QuotedLine.TestAndConsume(blockquote)
