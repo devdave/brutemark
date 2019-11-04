@@ -27,7 +27,7 @@ multiple lines</code></pre>
 
 
 <ol>
-    <li><p>First item</p>
+    <li>First item
     <ul>
         <li>nested unordered list</li>
         <li>Second element</li>
