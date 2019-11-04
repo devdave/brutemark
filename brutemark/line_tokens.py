@@ -91,7 +91,7 @@ class TextLine(Line):
             if hasattr(element, "render"):
                 line = element.render()
             else:
-                line = elements
+                line = element
 
             if line.endswith("  "):
                 line += "<br/>"
