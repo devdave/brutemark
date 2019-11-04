@@ -161,6 +161,34 @@ class OrderedItemLine(Line):
     PROCESS_BODY = True
     CAN_NEST = True
 
+    @classmethod
+    def Render(cls, elements):
+        lines = []
+        for token in elements:
+            if hasattr(token, "render"):
+                lines.append(token.render())
+            else:
+                lines.append(token)
+
+        body = "\n".join(lines)
+        return f"""<ol>
+            {body}
+        </ol>
+        """
+
+        return textwrap.dedent(body)
+
+    def render(self):
+        pieces = []
+        for element in self.content:
+            if hasattr(element, "render"):
+                pieces.append(element.render())
+            else:
+                pieces.append(element)
+
+        body = " ".join(pieces)
+        return f"""<li>{body}</li>"""
+
 class UnorderedItemLine(Line):
     REGEX = regexs.UNORDERED_ITEM
     PROCESS_BODY = True
