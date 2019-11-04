@@ -25,6 +25,19 @@ class Token(object):
         return other_token.stop <= self.stop and other_token.start >= self.start
 
 
+    def render(self):
+        product = []
+
+        if isinstance(self.content, str):
+            product.append(self.content)
+        else:
+            for element in self.content:
+                if hasattr(element, "render"):
+                    product.append(element.render())
+                else:
+                    product.append(element)
+
+        return " ".join(product)
 
     @classmethod
     def Consume(cls, raw):
