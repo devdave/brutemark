@@ -10,8 +10,8 @@ This should be split with a br tag.
     multiple lines
     
 1. First item
-  *. nested unordered list
-  *. Second element
+  * nested unordered list
+  * Second element
 2. Second Line
 """
 
