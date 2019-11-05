@@ -15,7 +15,7 @@ from . import body_tokens
 
 def Blocker(raw_text):
     blocks = []
-    raw_lines = raw_text.strip().split("\n")
+    raw_lines = raw_text.split("\n")
 
     buffer = []
     spaces = 0

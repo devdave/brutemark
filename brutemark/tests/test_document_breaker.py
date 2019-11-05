@@ -1,7 +1,6 @@
 from brutemark.parser import Blocker
 test = \
-"""
-This is paragraph one it is all on one line and then given two empty lines
+"""This is paragraph one it is all on one line and then given two empty lines
 
 
 this is paragraph two it 
@@ -47,4 +46,4 @@ def test_block_sizes_are_correct():
     blocks = Blocker(test)
     assert len(blocks[0]) == 1
     assert len(blocks[1]) == 3
-    assert len(blocks[2]) == 26
+    assert len(blocks[2]) == 27

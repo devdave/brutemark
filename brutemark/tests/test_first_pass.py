@@ -1,8 +1,7 @@
 from brutemark.line_tokens import Line
 from brutemark.parser import Blocker, TokenizeLine
 
-test = """
-# Hello World
+test = """# Hello World
     This is a code line
     This is a nested code line #2
 > This is a block quote
@@ -21,7 +20,7 @@ def test_assure_blocker_works():
     blocks = Blocker(test)
     assert len(blocks) == 1
     lines = blocks[0]
-    assert len(lines) == 11
+    assert len(lines) == 12
 
 
 def test_feeding_lines_to_tokenizeline_does_not_break():
@@ -41,6 +40,6 @@ def test_feeding_lines_to_tokenizeline_does_not_break():
 
 
     assert len(tokenized_blocks) == 1
-    assert len(tokenized_blocks[0]) == 11
+    assert len(tokenized_blocks[0]) == 12
 
 
