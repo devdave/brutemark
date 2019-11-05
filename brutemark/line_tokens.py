@@ -1,5 +1,8 @@
 import textwrap
 
+from lxml.html.builder import E
+from lxml.html import fromstring
+
 from . import regexs
 from . import body_tokens
 
@@ -222,24 +225,13 @@ class HeaderLine(Line):
         return raw, product
 
     @classmethod
-    def Render(cls, elements):
+    def Render(cls, elements=None):
         assert len(elements) == 1
-
-        return elements[0].render()
+        sub_elements = [x.render() for x in elements[0].content]
+        header = E(f"h{elements[0].level}", *sub_elements)
+        return header
 
     def render(self):
-        components = []
-        if isinstance(self.content, str):
-            components.append(self.content)
-        else:
-            for element in self.content:
-                if hasattr(element, "render"):
-                    components.append(element.render())
-                else:
-                    components.append(element)
-
-        body = " ".join(components)
-
-        return f"<h{self.level}>{body}</h{self.level}>"
+        raise NotImplementedError("HeaderLine is rendered through classmethod Render")
 
 

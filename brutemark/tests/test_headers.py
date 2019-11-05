@@ -1,5 +1,7 @@
 
-from brutemark.parser import TokenizeLine
+from lxml.html import tostring
+
+from brutemark.parser import TokenizeLine, TokenizeBody
 from brutemark.line_tokens import HeaderLine
 
 tests = [
@@ -47,3 +49,17 @@ def test_headerline_consumes_text_correctly():
 
     _, actual = HeaderLine.TestAndConsume("## h2")
     assert actual.content == "h2"
+
+
+def test_headers_render_correctly():
+
+    for i in range(1,4):
+        test = "#" * i
+        test += f" h{i}"
+        expected = f"<h{i}>h{i}</h{i}>"
+
+        _, token = HeaderLine.TestAndConsume(test)
+        token.content = TokenizeBody(token.content)
+        actual = HeaderLine.Render([token])
+        actual_text = tostring(actual).decode()
+        assert actual_text == expected, f"Got {actual_text!r} for level {token.level}"
