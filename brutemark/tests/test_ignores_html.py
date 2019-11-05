@@ -6,8 +6,7 @@ test_document = """<table>
         <td>Hello</td>
         <td>World</td>
     </tr>
-</table>
-"""
+</table>"""
 
 def test_htmlline_correctly_consumes_the_correct_line_and_ignores_tabbed_or_spaced_lines():
     """
