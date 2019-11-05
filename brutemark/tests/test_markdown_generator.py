@@ -39,4 +39,18 @@ multiple lines</code></pre>
 def test_full_run_test_of_markdown_function():
     actual_output = markdown(test_input)
 
-    assert actual_output == expected_output
+    assert actual_output == expected_outputdef test_simple_generation_single_header():
+    test = \
+    textwrap.dedent("""
+    # Hello World
+    """).strip()
+
+    expected = tostring(
+        E("div",
+            E("h1", "Hello World"),
+            **{"class":"brutemark_root"}
+          )
+    )
+    actual = markdown(test)
+
+    assert actual == expected
