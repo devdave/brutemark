@@ -78,6 +78,10 @@ class RawText(Token):
 class Text(Token):
     REGEX = re.compile(r"(.+)")
 
+    @classmethod
+    def Render(cls, token):
+        return token.content
+
 
 class EmphasisText(Token):
     REGEX = [regexs.EMPHASIS_underscore, regexs.EMPHASIS_star]

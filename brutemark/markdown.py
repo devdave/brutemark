@@ -1,68 +1,86 @@
+from lxml.html.builder import E
+from lxml.html import tostring
+
 from .parser import TokenizeLine, TokenizeBody, Blocker
 
-ROOT_CONTAINER = "Root"
+
+class ROOT_CONTAINER:
+
+    def __init__(self):
+        self.content = None
+
+
+    @classmethod
+    def Contains(cls, child):
+        return True
+
+    def render(self, content, children):
+
+        leafs = []
+        for child in children:
+            if hasattr(child, "render"):
+                leafs.append(child.render)
+            else:
+                leafs.append(child)
+
+        return E("div", **leafs)
+
+
+
 
 class Tree:
 
-    def __init__(self, block_type, parent):
-        self.type = block_type
+    def __init__(self, token=None, parent=None):
+        self.type = type(token)
+        self.content = token
+
         self.parent = parent
         self.children = []
-        self.content = []
+
+
+
+    @classmethod
+    def MakeRoot(cls):
+        return cls(ROOT_CONTAINER(),parent=None)
+
 
     def __repr__(self):
         return f"<{self.__class__.__name__} type={self.type!r}>"
 
-    def create_child(self, line):
-        branch = Tree(type(line), self)
+    def add_child(self, child_token):
+        branch = Tree(child_token, self)
         self.children.append(branch)
         return branch
 
-    def add(self, line):
+    def add(self, line_token):
 
         if self.type == ROOT_CONTAINER:
-            branch = self.create_child(line)
-
-        elif self.type != type(line):
-
-
-            if line.nested is True: # TODO check nesting is allowed
-                branch = Tree(type(line), self)
-                self.children.append(branch)
-            else:
-                branch = self.parent.create_child(line)
-
-        elif self.type == type(line):
+            branch = self.add_child(line_token)
+        elif self.type.Contains(line_token) is False:
+            branch = self.parent.add(line_token)
+        elif self.type.Contains(line_token) is True:
+            self.add_child(line_token)
             branch = self
         else:
-            raise Exception("To fix")
-
-        branch.content.append(line)
-
+            branch = self.add_child(line_token)
 
         return branch
 
+    def render(self, parent_element = None):
 
-    def render(self):
-        output = []
         if self.type == ROOT_CONTAINER:
-            for element in self.children:
-                output.append(element.render())
+            kwargs = {"class": "brutemark_root"}
+            parent_element = E("div", **kwargs)
+
+            for branch in self.children:
+                branch.render(parent_element)
         else:
+            branches = [self.content]
+            branches.extend([x.content for x in self.children])
+            child_element = self.type.Render(branches)
+            parent_element.append(child_element)
 
-            if self.content:
-                output.append(self.type.Render(self.content))
-
-            if self.children:
-                for child in self.children:
-                    output.append(child.render())
-
-        return "\n".join(output)
-
-
-
-
-
+        return parent_element
 
 
 
@@ -84,7 +102,7 @@ def markdown(raw_string, return_tree=False):
 
     #Consolidate lines in a block
 
-    root = Tree(ROOT_CONTAINER, None)
+    root = Tree.MakeRoot()
 
     current_branch = root
 
@@ -94,7 +112,7 @@ def markdown(raw_string, return_tree=False):
             current_branch = current_branch.add(line)
 
 
-    return root.render() if return_tree is False else root
+    return tostring(root.render()) if return_tree is False else root
 
 
 

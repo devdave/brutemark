@@ -27,6 +27,10 @@ class Line(object):
         self.nested = nested
 
     @classmethod
+    def Contains(cls, new_line):
+        return type(new_line) == cls
+
+    @classmethod
     def Render(cls, elements):
         lines = []
         for element in elements:
@@ -34,12 +38,10 @@ class Line(object):
 
         body = "\n".join(lines)
 
-        product = f"""\
-        <{cls.__name__}>
-            {body}
-        </{cls.__name__}"""
+        element = E(cls.__name__)
+        element.text = body
 
-        return textwrap.dedent(product)
+        return element
 
 
     def render(self):
@@ -67,17 +69,28 @@ class Line(object):
 
 
 class BlankLine(Line):
-    CAN_NEST = False
+
 
     @classmethod
     def Render(cls, elements):
-        return "\n" * len(elements)
+        #No matter how many blanklines, just do one <br/>
+        return E("br")
 
 
 
 class TextLine(Line):
     PROCESS_BODY = True
-    CAN_NEST = False
+
+
+    @classmethod
+    def Contains(cls, new_token):
+        return type(new_token) == cls
+
+    def can_nest(self, new_line):
+        """
+            Paragraph/text lines can be merged together
+        """
+        return type(new_line) == TextLine
 
     @classmethod
     def TestAndConsume(cls, raw):
@@ -87,22 +100,25 @@ class TextLine(Line):
         return cls(raw, is_nested)
 
     @classmethod
-    def Render(cls,elements):
+    def Render(cls, children):
+
         lines = []
-        for element in elements:
-            line = ""
-            if hasattr(element, "render"):
-                line = element.render()
-            else:
-                line = element
+        for child_token in children:
+            child_token.render(lines)
 
-            if line.endswith("  "):
-                line += "<br/>"
+        paragraph = E("p", *lines)
+        return paragraph
 
-            lines.append(line)
+    def render(self, container:list):
+        for body_token in self.content:
+            container.append(body_token.render())
 
-        body = "\n".join(lines)
-        return f"<p>{body}</p>"
+        if hasattr(container[-1], "endswith"):
+            if container[-1].endswith("  "):
+                container.append(E("br"))
+
+        return container
+
 
 
 class QuotedLine(Line):
@@ -149,13 +165,13 @@ class CodeLine(Line):
     def Render(cls, elements):
         lines = []
         for element in elements:
-            lines.append(element.render())
+            # Codeline does not have preprocessed bodies
+            lines.append(element.content)
 
         body = "\n".join(lines)
-        return f"<pre><code>{body}</code></pre>"
+        return E("pre", E("code", body))
 
-    def render(self):
-        return self.content
+
 
 
 
@@ -171,15 +187,9 @@ class OrderedItemLine(Line):
             if hasattr(token, "render"):
                 lines.append(token.render())
             else:
-                lines.append(token)
+                lines.append(E("li", token.content))
 
-        body = "\n".join(lines)
-        return f"""<ol>
-            {body}
-        </ol>
-        """
-
-        return textwrap.dedent(body)
+        return E("ol", *lines)
 
     def render(self):
         pieces = []
@@ -189,8 +199,8 @@ class OrderedItemLine(Line):
             else:
                 pieces.append(element)
 
-        body = " ".join(pieces)
-        return f"""<li>{body}</li>"""
+        return E("li", *pieces)
+
 
 class UnorderedItemLine(Line):
     REGEX = regexs.UNORDERED_ITEM
