@@ -16,7 +16,8 @@ def test_simple_generation_single_header():
         E("div",
             E("h1", "Hello World"),
             **{"class":"brutemark_root"}
-          )
+          ),
+        pretty_print=True, encoding="unicode"
     )
     actual = markdown(test)
 
@@ -45,7 +46,7 @@ def test_simple__multiline_paragraph():
 
     root_kwargs = {"class":"brutemark_root"}
     root = E("div", E("p", *expected_text), **root_kwargs)
-    expected = tostring(root)
+    expected = tostring(root,pretty_print=True, encoding="unicode")
 
     actual_string = markdown(test)
 
@@ -54,10 +55,12 @@ def test_simple__multiline_paragraph():
 def test_simple_multiline_code():
 
 
-    test = \
-    """    This is a code block
-        that spans
-        multiple lines"""
+    test = [
+        "    This is a code block",
+        "    that spans",
+        "    multiple lines"
+    ]
+    test = "\n".join(test)
 
     expected_text = \
     [
@@ -73,7 +76,9 @@ def test_simple_multiline_code():
                 E("code", *expected_text)
             ),
             ** root_kwargs
-        )
+        ),
+        pretty_print=True, encoding="unicode"
+
     )
 
     actual = markdown(test)
@@ -96,7 +101,8 @@ def test_simple_multiple_ordered_list():
                 E("li", "Second item")
             ),
             ** root_kwargs
-        )
+        ),
+        pretty_print = True, encoding = "unicode"
     )
     actual = markdown(test)
 
