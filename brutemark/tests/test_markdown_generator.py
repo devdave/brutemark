@@ -102,3 +102,27 @@ def test_simple_multiple_ordered_list():
 
     assert actual == expected
 
+def test_mixed_lists():
+
+    test = "\n".join([
+        "1. item 1",
+        " * subitem A",
+        "2. item 2"
+    ])
+
+    expected = tostring(
+        E("div",
+            E("ol",
+                E("li","item 1",
+                    E("ul", E("li", "subitem A"))
+                ),
+                E("li", "item 2")
+            ),
+            **{"class":"brutemark_root"}
+        ),
+        pretty_print=True, encoding="unicode"
+    )
+
+    actual = markdown(test)
+
+    assert actual == expected
