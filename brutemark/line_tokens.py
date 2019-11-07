@@ -184,12 +184,58 @@ class OrderedItemLine(Line):
     def Render(cls, elements):
         lines = []
         for token in elements:
-            if hasattr(token, "render"):
+            if type(token) != cls:
+                lines.append(token.Render([token.content] + [token.children]))
+            elif hasattr(token, "render"):
                 lines.append(token.render())
             else:
                 lines.append(E("li", token.content))
 
         return E("ol", *lines)
+
+    def render(self):
+        from collections import defaultdict
+
+        pieces = []
+        grouped = defaultdict(list)
+        for element in self.content:
+            grouped[type(element)].append(element)
+
+        for content_type, elements in grouped.items():
+
+            if content_type not in [body_tokens.Text, body_tokens.EmphasisText, body_tokens.StrongText]:
+                pieces.append(content_type.Render(elements))
+            else:
+                for element in elements:
+                    pieces.append(element.render())
+
+
+        return E("li", *pieces)
+
+    @classmethod
+    def Contains(cls, new_line:Line) -> bool:
+        if cls == type(new_line):
+            return True
+        elif new_line.nested is True:
+            return True
+
+        return False
+
+class UnorderedItemLine(Line):
+    REGEX = regexs.UNORDERED_ITEM
+    PROCESS_BODY = True
+    CAN_NEST = True
+
+    @classmethod
+    def Render(cls, elements):
+        lines = []
+        for token in elements:
+            if hasattr(token, "render"):
+                lines.append(token.render())
+            else:
+                lines.append(E("li", token.content))
+
+        return E("ul", *lines)
 
     def render(self):
         pieces = []
@@ -200,12 +246,6 @@ class OrderedItemLine(Line):
                 pieces.append(element)
 
         return E("li", *pieces)
-
-
-class UnorderedItemLine(Line):
-    REGEX = regexs.UNORDERED_ITEM
-    PROCESS_BODY = True
-    CAN_NEST = True
 
 class HeaderLine(Line):
 

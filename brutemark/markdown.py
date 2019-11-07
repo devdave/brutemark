@@ -1,6 +1,8 @@
 from lxml.html.builder import E
 from lxml.html import tostring
 
+from collections import defaultdict
+
 from .parser import TokenizeLine, TokenizeBody, Blocker
 
 
@@ -13,6 +15,15 @@ class ROOT_CONTAINER:
     @classmethod
     def Contains(cls, child):
         return True
+
+    @classmethod
+    def Render(cls, elements):
+        grouped = defaultdict(list)
+
+        for element in elements:
+            if hasattr(element, "render"):
+                pass
+
 
     def render(self, content, children):
 
@@ -59,8 +70,12 @@ class Tree:
         elif self.type.Contains(line_token) is False:
             branch = self.parent.add(line_token)
         elif self.type.Contains(line_token) is True:
-            self.add_child(line_token)
-            branch = self
+            if line_token.nested is True:
+                self.content.content.append(line_token)
+                branch = Tree(line_token, self)
+            else:
+                self.add_child(line_token)
+                branch = self
         else:
             branch = self.add_child(line_token)
 
@@ -91,11 +106,11 @@ def markdown(raw_string, return_tree=False):
     for block in Blocker(raw_string):
         tokenized_block = []
         for line in block:
-            tokenized_lined = TokenizeLine(line)
-            if tokenized_lined.PROCESS_BODY is True:
-                tokenized_lined.content = TokenizeBody(tokenized_lined.content)
+            tokenized_line = TokenizeLine(line)
+            if tokenized_line.PROCESS_BODY is True:
+                tokenized_line.content = TokenizeBody(tokenized_line.content)
 
-            tokenized_block.append(tokenized_lined)
+            tokenized_block.append(tokenized_line)
         tokenized_document.append(tokenized_block)
         tokenized_block = []
 
@@ -106,13 +121,11 @@ def markdown(raw_string, return_tree=False):
 
     current_branch = root
 
-
     for block in tokenized_document:
         for line in block:
             current_branch = current_branch.add(line)
 
-
-    return tostring(root.render()) if return_tree is False else root
+    return tostring(root.render(), pretty_print=True, encoding="unicode") if return_tree is False else root
 
 
 
