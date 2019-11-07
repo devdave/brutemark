@@ -132,3 +132,37 @@ def test_mixed_lists():
     actual = markdown(test)
 
     assert actual == expected
+
+def test_multidepth_lists():
+
+    test = "\n".join([
+        "1. item 1",
+        " * subitem A",
+        " * subitem B",
+        "  12. super nested item"
+        "2. item 2"
+    ])
+
+    expected = tostring(
+        E("div",
+            E("ol",
+                E("li","item 1",
+                    E("ul",
+                        E("li", "subitem A"),
+                        E("li", "subitem B",
+                            E("ol",
+                              E("li", "super nested item")
+                            )
+                        )
+                    )
+                ),
+                E("li", "item 2")
+            ),
+            **{"class":"brutemark_root"}
+          ),
+        pretty_print = True, encoding='unicode'
+    )
+
+    actual = markdown(test)
+
+    assert actual == expected
