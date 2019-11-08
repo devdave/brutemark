@@ -54,10 +54,7 @@ Line based tokens
 
 
 
-
-
-
-def TokenizeBody(raw:str)->[]:
+class BodyTokenizer():
     """
         given a string like
             hello __world__ this *is* a **test** of [Markdown](https://daringfireball.net/projects/markdown/ "Markdown homepage")
@@ -76,37 +73,44 @@ def TokenizeBody(raw:str)->[]:
     :param raw:str
     :return:
     """
-    processors = [
-        body_tokens.EmphasisText,
-        body_tokens.StrongText,
-        body_tokens.Anchor,
-        body_tokens.Image
-    ]
-    product = []
-
-    for processor in processors:
-
-        _, token = processor.Consume(raw)
-
-        if token is not None:
-            pre = post = None
-
-            if token.start != 0:
-                product.extend(TokenizeBody(raw[:token.start]))
-
-            token.content = TokenizeBody(token.content)
-            product.append(token)
-
-            if token.stop != len(raw):
-                product.extend(TokenizeBody(raw[token.stop:]))
-
-            break
-
-    else:
-        product.append(body_tokens.Text(raw, 0, len(raw)))
+    def __init__(self):
+        self.processors = [
+            body_tokens.EmphasisText,
+            body_tokens.StrongText,
+            body_tokens.Anchor,
+            body_tokens.Image
+        ]
+        self.default_processor = [body_tokens.Text]
 
 
-    return product
+    def process(self, raw:str)->[]:
+        product = []
+        for processor in self.processors:
+
+            _, token = processor.Consume(raw)
+
+            if token is not None:
+                pre = post = None
+
+                if token.start != 0:
+                    product.extend(TokenizeBody(raw[:token.start]))
+
+                token.content = TokenizeBody(token.content)
+                product.append(token)
+
+                if token.stop != len(raw):
+                    product.extend(TokenizeBody(raw[token.stop:]))
+
+                break
+
+        else:
+            product.append(body_tokens.Text(raw, 0, len(raw)))
+
+        return product
+
+body_tokenizer = BodyTokenizer()
+TokenizeBody = body_tokenizer.process
+
 
 def TokenizeLine(raw:str)->line_tokens.Line:
     """
