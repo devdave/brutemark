@@ -100,7 +100,7 @@ class Tree:
 
 
 
-def markdown(raw_string, return_tree=False):
+def markdown(raw_string, return_tree=False, pretty_print=True):
 
     tokenized_document = []
     for block in Blocker(raw_string):
@@ -125,7 +125,7 @@ def markdown(raw_string, return_tree=False):
         for line in block:
             current_branch = current_branch.add(line)
 
-    return tostring(root.render(), pretty_print=True, encoding="unicode") if return_tree is False else root
+    return tostring(root.render(), pretty_print=pretty_print, encoding="unicode") if return_tree is False else root
 
 
 
