@@ -14,14 +14,17 @@ def test_htmlline_correctly_consumes_the_correct_line_and_ignores_tabbed_or_spac
     """
     _, actual = HTMLLine.TestAndConsume("<span>")
     assert actual is not None
+    assert isinstance(actual, HTMLLine)
 
-    _, actual = HTMLLine.TestAndConsume("\t<thing>")
-    assert actual is None
+    _, actual = HTMLLine.TestAndConsume("   <dd>")
+    assert actual is not None
+    assert isinstance(actual, HTMLLine)
 
-    _, actual = HTMLLine.TestAndConsume("   <foo bar=\"123\">")
-    assert actual is None
+    _, actual = HTMLLine.TestAndConsume("   <dt bar=\"123\">")
+    assert actual is not None
+    assert isinstance(actual, HTMLLine)
 
-    _, actual = HTMLLine.TestAndConsume("<foo bar=\"123\">")
+    _, actual = HTMLLine.TestAndConsume("<dt bar=\"123\">")
 
 
 

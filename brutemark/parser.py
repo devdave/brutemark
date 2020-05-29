@@ -111,34 +111,40 @@ class BodyTokenizer():
 body_tokenizer = BodyTokenizer()
 TokenizeBody = body_tokenizer.process
 
+class LineTokenizer(object):
 
-def TokenizeLine(raw:str)->line_tokens.Line:
-    """
-    :param raw_str:
-    :return:
-    """
-    is_nested = False
+    def __init__(self):
+        self.processors = [
+            line_tokens.HTMLLine,
+            line_tokens.CodeLine,
+            line_tokens.QuotedLine,
+            line_tokens.UnorderedItemLine,
+            line_tokens.OrderedItemLine,
+            line_tokens.HeaderLine
+        ]
 
-    if raw.strip() == "":
-        return line_tokens.BlankLine(raw, False)
+    def process(self, raw:str, last_token:line_tokens.Line = None, stack=None)->line_tokens.Line:
 
-    processors = [
-        line_tokens.HTMLLine,
-        line_tokens.CodeLine,
-        line_tokens.QuotedLine,
-        line_tokens.UnorderedItemLine,
-        line_tokens.OrderedItemLine,
-        line_tokens.HeaderLine
-    ]
+        is_nested = False
+        stack = [] if stack is None else stack
 
-    for processor in processors:
-        _, product = processor.TestAndConsume(raw)
-
-        if product is not None:
-            return product
-            break
-
-    else:
-        return line_tokens.TextLine.TestAndConsume(raw)
+        current_processors = last_token.PROCESSORS if last_token is not None else self.processors
 
 
+        if raw.strip() == "":
+            return line_tokens.BlankLine(raw, False)
+
+
+        for processor in current_processors:
+            _, product = processor.TestAndConsume(raw)
+
+            if product is not None:
+                return product
+                break
+
+        else:
+            return line_tokens.TextLine.TestAndConsume(raw)
+
+
+line_tokenizer = LineTokenizer()
+TokenizeLine = line_tokenizer.process

@@ -9,9 +9,9 @@ BLANK = re.compile(r"^$")
 
 #TODO this will fail to match correctly if a line is `<div><p>foo bar</p></div>`
 HTML_LINE = re.compile(
-                    r"""^(?!\t) #Ignore if line starts with tab or more than 3 spaces
-                        (?!\s{4,})  #TODO I don't feel like fixing right now but this fails to match if there are ANY spaces
-                            (?P<content>\<[^\>]+\>) #Match <ANYTHING> that is wrapped with greater/less than symbols
+                    r"""
+                    \s{0,3}                  
+                    (?P<content>\<[^\>]+\>) #Match <ANYTHING> that is wrapped with greater/less than symbols
                     """, re.VERBOSE)
 
 CODE_LINE = re.compile(r"(^\ {4})|(^\t)")

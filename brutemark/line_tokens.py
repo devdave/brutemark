@@ -8,11 +8,15 @@ from . import body_tokens
 
 def test_nested(raw):
     match = regexs.START_WS.match(raw)
+    depth = 0
 
     if match is not None:
+        lead = raw[:match.end()]
         raw = raw[match.end():]
+        depth = lead.count(" ")
+        depth += lead.count("\t")
 
-    return raw, match is not None
+    return raw, depth
 
 
 class Line(object):
@@ -21,6 +25,7 @@ class Line(object):
     CAN_NEST = False
     ALLOWED_NESTED = []
     CAN_CONTAIN = [body_tokens.Text]
+    PROCESSORS = []
 
     def __init__(self, content, nested=False):
         self.content = content
@@ -57,7 +62,7 @@ class Line(object):
 
     @classmethod
     def TestAndConsume(cls, raw):
-        assert cls.REGEX is not None, f"Expected {cls} to have a REGEX assigned"
+        assert cls.REGEX is not None, f"While processing {raw!r}\nExpected {cls} to have a REGEX assigned"
         product = None
         raw, is_nested = test_nested(raw)
 
@@ -142,6 +147,11 @@ class HTMLLine(Line):
 
         return raw, product
 
+    @classmethod
+    def Render(cls, elements):
+        content = [x.content for x in elements]
+        content = "\n".join(content)
+        return fromstring(content)
 
 
 class CodeLine(Line):
@@ -285,3 +295,15 @@ class HeaderLine(Line):
         raise NotImplementedError("HeaderLine is rendered through classmethod Render")
 
 
+
+"""
+HACK
+"""
+Line.PROCESSORS = [HTMLLine, CodeLine, QuotedLine, UnorderedItemLine, OrderedItemLine, HeaderLine]
+HTMLLine.PROCESSORS = [HTMLLine]
+CodeLine.PROCESSORS = [CodeLine]
+QuotedLine.PROCESSORS = [QuotedLine, TextLine]
+UnorderedItemLine.PROCESSORS = Line.PROCESSORS
+OrderedItemLine.PROCESSORS = Line.PROCESSORS
+HeaderLine.PROCESSORS = [BlankLine]
+BlankLine.PROCESSORS= Line.PROCESSORS

@@ -2,7 +2,7 @@
 from lxml.html import tostring
 
 from brutemark.parser import TokenizeLine, TokenizeBody
-from brutemark.line_tokens import HeaderLine
+from brutemark.line_tokens import HeaderLine, Line
 
 tests = [
     "# h1",
@@ -26,7 +26,7 @@ nested_tests = [
 def test_all_headers():
 
     for position, test_str in enumerate(tests):
-        token = TokenizeLine(test_str)
+        token = TokenizeLine(test_str, None, )
         assert isinstance(token, HeaderLine)
         assert token.level == position + 1, f"Expected {position+1} for level but got {token.level} with {test_str!r}"
         assert token.nested == False
@@ -37,7 +37,7 @@ def test_all_nested_headers():
         token = TokenizeLine(test_str)
         assert isinstance(token, HeaderLine)
         assert token.level == position + 1, f"Expected {position+1} for level but got {token.level} with {test_str!r}"
-        assert token.nested == True
+        assert token.nested == 2
 
 def test_header_content_is_correct():
     for position, test_str in enumerate(tests):

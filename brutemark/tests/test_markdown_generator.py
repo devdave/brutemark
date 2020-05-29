@@ -160,9 +160,9 @@ def test_multidepth_lists():
             ),
             **{"class":"brutemark_root"}
           ),
-        pretty_print = True, encoding='unicode'
-    )
+        pretty_print = False, encoding='unicode'
+    ).replace("\n", "")
 
-    actual = markdown(test)
+    actual = markdown(test, pretty_print=False)
 
     assert actual == expected

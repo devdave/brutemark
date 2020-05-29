@@ -31,7 +31,7 @@ def test_feeding_lines_to_tokenizeline_does_not_break():
         tokenized_line = []
         for raw_line in raw_blocks:
 
-            token = TokenizeLine(raw_line)
+            token = TokenizeLine(raw_line, None, [Line])
             assert isinstance(token, Line)
 
             tokenized_line.append(token)

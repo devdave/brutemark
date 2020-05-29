@@ -41,9 +41,10 @@ class ROOT_CONTAINER:
 
 class Tree:
 
-    def __init__(self, token=None, parent=None):
+    def __init__(self, token=None, parent=None, nested=0):
         self.type = type(token)
         self.content = token
+        self.nested = nested
 
         self.parent = parent
         self.children = []
@@ -59,7 +60,7 @@ class Tree:
         return f"<{self.__class__.__name__} type={self.type!r}>"
 
     def add_child(self, child_token):
-        branch = Tree(child_token, self)
+        branch = Tree(child_token, self, nested=child_token.nested)
         self.children.append(branch)
         return branch
 
@@ -70,9 +71,11 @@ class Tree:
         elif self.type.Contains(line_token) is False:
             branch = self.parent.add(line_token)
         elif self.type.Contains(line_token) is True:
-            if line_token.nested is True:
+            if line_token.nested > self.nested:
                 self.content.content.append(line_token)
                 branch = Tree(line_token, self)
+            elif line_token.nested < self.nested:
+                branch = self.parent.add_child(line_token)
             else:
                 self.add_child(line_token)
                 branch = self
@@ -105,12 +108,14 @@ def markdown(raw_string, return_tree=False, pretty_print=True):
     tokenized_document = []
     for block in Blocker(raw_string):
         tokenized_block = []
+        last_token = None
         for line in block:
-            tokenized_line = TokenizeLine(line)
-            if tokenized_line.PROCESS_BODY is True:
-                tokenized_line.content = TokenizeBody(tokenized_line.content)
+            last_token = line_token = TokenizeLine(line, last_token=last_token, stack=tokenized_block)
 
-            tokenized_block.append(tokenized_line)
+            if line_token.PROCESS_BODY is True:
+                line_token.content = TokenizeBody(line_token.content)
+
+            tokenized_block.append(line_token)
         tokenized_document.append(tokenized_block)
         tokenized_block = []
 
@@ -125,7 +130,12 @@ def markdown(raw_string, return_tree=False, pretty_print=True):
         for line in block:
             current_branch = current_branch.add(line)
 
-    return tostring(root.render(), pretty_print=pretty_print, encoding="unicode") if return_tree is False else root
+    if return_tree is not False:
+        return root
+    elif pretty_print is not True:
+        return tostring(root.render(), encoding="unicode")
+    else:
+        return tostring(root.render(), pretty_print=pretty_print, encoding="unicode")
 
 
 

@@ -19,14 +19,14 @@ def test_blockquote_consumes_string_correctly():
 
 
 def test_detects_blockquote():
-    tokenized_line = TokenizeLine(blockquote)
+    tokenized_line = TokenizeLine(blockquote, None, [])
 
     assert isinstance(tokenized_line, QuotedLine)
     assert tokenized_line.nested is False
 
 
 def test_blockquote_detected_and_is_nested():
-    tokenized_line = TokenizeLine(nested_blockquote)
+    tokenized_line = TokenizeLine(nested_blockquote, None, [])
 
     assert tokenized_line.nested is True
 

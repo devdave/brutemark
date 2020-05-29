@@ -12,18 +12,18 @@ def test_ordered_line_items():
     tokenized_line = TokenizeLine(ordered_line)
 
     assert isinstance(tokenized_line, OrderedItemLine)
-    assert tokenized_line.nested == False
+    assert tokenized_line.nested == 0
 
     tokenized_line = TokenizeLine(nested_ordered_line)
     assert isinstance(tokenized_line, OrderedItemLine)
-    assert tokenized_line.nested == True
+    assert tokenized_line.nested == 2
 
 
 def test_unordered_line_items():
     tokenized_line = TokenizeLine(unordered_line)
     assert isinstance(tokenized_line, UnorderedItemLine)
-    assert tokenized_line.nested == False
+    assert tokenized_line.nested == 0
 
     tokenized_line = TokenizeLine(nested_unordered_line)
     assert isinstance(tokenized_line, UnorderedItemLine)
-    assert tokenized_line.nested == True
+    assert tokenized_line.nested == 2
